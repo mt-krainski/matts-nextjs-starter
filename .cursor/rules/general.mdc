@@ -1,0 +1,13 @@
+---
+alwaysApply: true
+---
+
+This is a modern next.js project using:
+- typescript
+- supabase
+- shadcn/ui for components - always add necessary components using the shadcn/ui CLI
+
+# Important Rules to follow
+- keep the code clean and readable, keep comments to a minimum. Prefer clean code to verbose comments
+- never generate documentation files unless explicitly asked for
+- never, under any circumstances, don't grep the .env file. Ask the user to provide the value if needed.
