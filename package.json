@@ -1,12 +1,13 @@
 {
   "name": "matts-starter",
   "version": "0.1.0",
-  "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npm run prepare-third-party-licenses-file && cp THIRD_PARTY_LICENSES.txt public/ && next build && node ./scripts/add-copyright-notice.js",
     "start": "next start",
     "lint": "next lint",
+    "prepare-third-party-licenses-file": "node ./scripts/parse-licenses.js",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
@@ -37,6 +38,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
+    "license-checker": "^25.0.1",
     "supabase": "^2.33.5",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
