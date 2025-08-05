@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 
 // Read AUTHORS file
 const authors = fs
