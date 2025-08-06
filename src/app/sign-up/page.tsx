@@ -1,4 +1,4 @@
-import { login } from "./actions";
+import { signup } from "../login/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 import { authCopy } from "@/lib/copy";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
@@ -20,9 +20,9 @@ export default function LoginPage() {
           {/* Title and Subtitle */}
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-gray-900">
-              {authCopy.login.title}
+              {authCopy.signUp.title}
             </h1>
-            <p className="text-gray-600">{authCopy.login.subtitle}</p>
+            <p className="text-gray-600">{authCopy.signUp.subtitle}</p>
           </div>
 
           {/* Form */}
@@ -32,13 +32,13 @@ export default function LoginPage() {
                 htmlFor="email"
                 className="text-sm font-medium text-gray-900"
               >
-                {authCopy.login.emailLabel}
+                {authCopy.signUp.emailLabel}
               </Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder={authCopy.login.emailPlaceholder}
+                placeholder={authCopy.signUp.emailPlaceholder}
                 required
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               />
@@ -48,33 +48,33 @@ export default function LoginPage() {
                 htmlFor="password"
                 className="text-sm font-medium text-gray-900"
               >
-                {authCopy.login.passwordLabel}
+                {authCopy.signUp.passwordLabel}
               </Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder={authCopy.login.passwordPlaceholder}
+                placeholder={authCopy.signUp.passwordPlaceholder}
                 required
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               />
             </div>
             <Button
               type="submit"
-              formAction={login}
+              formAction={signup}
               className="w-full bg-gray-900 hover:bg-gray-800"
             >
-              {authCopy.login.submitButton}
+              {authCopy.signUp.submitButton}
             </Button>
           </form>
 
-          {/* Sign Up Link */}
+          {/* Sign In Link */}
           <div className="text-center">
             <Link
-              href="/sign-up"
+              href="/login"
               className="text-sm text-gray-600 hover:text-gray-900"
             >
-              {authCopy.login.signUpLink}
+              {authCopy.signUp.signInLink}
             </Link>
           </div>
 
