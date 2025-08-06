@@ -5,6 +5,28 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { authCopy } from "@/lib/copy";
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-gray-900 hover:bg-gray-800"
+    >
+      {pending ? (
+        <>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+          {authCopy.signUp.submitButton}
+        </>
+      ) : (
+        authCopy.signUp.submitButton
+      )}
+    </Button>
+  );
+}
 
 export default function SignUpPage() {
   return (
@@ -26,7 +48,7 @@ export default function SignUpPage() {
           </div>
 
           {/* Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" action={sendOtp}>
             <div className="space-y-2">
               <Label
                 htmlFor="email"
@@ -43,13 +65,7 @@ export default function SignUpPage() {
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               />
             </div>
-            <Button
-              type="submit"
-              formAction={sendOtp}
-              className="w-full bg-gray-900 hover:bg-gray-800"
-            >
-              {authCopy.signUp.submitButton}
-            </Button>
+            <SubmitButton />
           </form>
 
           {/* Sign In Link */}

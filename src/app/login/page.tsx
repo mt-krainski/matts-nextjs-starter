@@ -1,3 +1,5 @@
+"use client";
+
 import { sendOtp } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,6 +7,28 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { authCopy } from "@/lib/copy";
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-gray-900 hover:bg-gray-800"
+    >
+      {pending ? (
+        <>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+          {authCopy.login.submitButton}
+        </>
+      ) : (
+        authCopy.login.submitButton
+      )}
+    </Button>
+  );
+}
 
 export default function LoginPage() {
   return (
@@ -26,7 +50,7 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" action={sendOtp}>
             <div className="space-y-2">
               <Label
                 htmlFor="email"
@@ -43,13 +67,7 @@ export default function LoginPage() {
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               />
             </div>
-            <Button
-              type="submit"
-              formAction={sendOtp}
-              className="w-full bg-gray-900 hover:bg-gray-800"
-            >
-              {authCopy.login.submitButton}
-            </Button>
+            <SubmitButton />
           </form>
 
           {/* Sign Up Link */}

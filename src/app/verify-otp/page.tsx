@@ -9,6 +9,49 @@ import { authCopy } from "@/lib/copy";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
+
+function VerifyButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-gray-900 hover:bg-gray-800"
+    >
+      {pending ? (
+        <>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+          {authCopy.verifyOtp.submitButton}
+        </>
+      ) : (
+        authCopy.verifyOtp.submitButton
+      )}
+    </Button>
+  );
+}
+
+function ResendButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="text-sm text-gray-600 hover:text-gray-900 underline disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? (
+        <>
+          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600 inline-block mr-2" />
+          Resending...
+        </>
+      ) : (
+        authCopy.verifyOtp.resendLink
+      )}
+    </button>
+  );
+}
 
 export default function VerifyOtpPage() {
   const searchParams = useSearchParams();
@@ -52,7 +95,7 @@ export default function VerifyOtpPage() {
           )}
 
           {/* Verification Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" action={verifyOtp}>
             <input type="hidden" name="email" value={email} />
             <div className="space-y-2">
               <Label
@@ -72,25 +115,13 @@ export default function VerifyOtpPage() {
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900 text-center text-lg tracking-widest"
               />
             </div>
-            <Button
-              type="submit"
-              formAction={verifyOtp}
-              className="w-full bg-gray-900 hover:bg-gray-800"
-            >
-              {authCopy.verifyOtp.submitButton}
-            </Button>
+            <VerifyButton />
           </form>
 
           {/* Resend Code Form */}
-          <form className="text-center">
+          <form className="text-center" action={resendOtp}>
             <input type="hidden" name="email" value={email} />
-            <button
-              type="submit"
-              formAction={resendOtp}
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
-            >
-              {authCopy.verifyOtp.resendLink}
-            </button>
+            <ResendButton />
           </form>
 
           {/* Back to Login Link */}
