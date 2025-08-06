@@ -1,13 +1,38 @@
 ---
 alwaysApply: true
 ---
+# Project Configuration
 
-This is a modern next.js project using:
-- typescript
-- supabase
-- shadcn/ui for components - always add necessary components using the shadcn/ui CLI
+## Project Overview
+This is a modern Next.js 15 application built with TypeScript, using the App Router and React 19. The project follows modern development practices with a focus on performance and developer experience.
 
-# Important Rules to follow
-- keep the code clean and readable, keep comments to a minimum. Prefer clean code to verbose comments
-- never generate documentation files unless explicitly asked for
-- never, under any circumstances, don't grep the .env file. Ask the user to provide the value if needed.
+## Tech Stack & Frameworks
+
+### Core Technologies
+- **Next.js 15** with App Router (using `app/` directory structure)
+- **React 19** with latest features
+- **TypeScript 5** for type safety
+- **Tailwind CSS 4** for styling (with CSS variables)
+- **Turbopack** for fast development builds
+
+### UI & Components
+- **shadcn/ui** components with style variant. When adding new components always use the shadcn CLI (like `npx shadcn@latest add ...`)
+- **Lucide React** for icons, use the `lucide-react` package, always prefer using the icons from there instead of creating your own
+- **clsx** and **tailwind-merge** for conditional styling
+- **tw-animate-css** for animations
+
+### Development Tools
+- **ESLint** with Next.js configuration
+- **PostCSS** with Tailwind CSS
+- **TypeScript** strict mode
+
+## Other notes
+- Unless I explicitly ask for it, don't modify the readme or write other documentation files.
+- Avoid using `console.log` in backend code. `warn` and `error` are fine, but only if there is a good reason.
+- Don't attempt to run the development server. I will do that and let you know in case there are issues.
+- Be cool and casual, don't use overexaggerated phrases like "You're absolutely right!" or "ah!"
+- Prefer to copy or move files to deleting and then reconstructing them.
+- Maintain clean code, don't leave unnecessary comments. Comments should be used to explain the "why" of the code, not the "what".
+- Before making any bigger changes, be sure to analyze the codebase and used practices and patterns and use them in the new code.
+- If we're in a chain of changes, and some functions changed places, unless there is a good reason, don't change the functions back. E.g. if you originally wrote a type declaration in `types.ts` and I moved to a different file, don't change the type declaration back `types.ts`.
+- Don't use `any`, it will cause build issues.

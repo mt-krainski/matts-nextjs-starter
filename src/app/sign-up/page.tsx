@@ -1,4 +1,4 @@
-import { signup } from "../login/actions";
+import { sendOtp } from "../login/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,25 +43,9 @@ export default function SignUpPage() {
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               />
             </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="password"
-                className="text-sm font-medium text-gray-900"
-              >
-                {authCopy.signUp.passwordLabel}
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder={authCopy.signUp.passwordPlaceholder}
-                required
-                className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
-              />
-            </div>
             <Button
               type="submit"
-              formAction={signup}
+              formAction={sendOtp}
               className="w-full bg-gray-900 hover:bg-gray-800"
             >
               {authCopy.signUp.submitButton}
