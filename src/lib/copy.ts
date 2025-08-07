@@ -1,6 +1,9 @@
+import { config } from "./config";
+
 export const authCopy = {
+  companyName: config.company.name,
   login: {
-    title: "Welcome to Matt's Starter",
+    title: `Welcome to ${config.company.name}`,
     subtitle: "A modern Next.js starter with Supabase and shadcn/ui",
     emailLabel: "Email",
     emailPlaceholder: "Type your email",
@@ -9,7 +12,7 @@ export const authCopy = {
   },
   signUp: {
     title: "Create your account",
-    subtitle: "Get started with Matt's Starter",
+    subtitle: `Get started with ${config.company.name}`,
     emailLabel: "Email",
     emailPlaceholder: "Type your email",
     submitButton: "Send verification code",

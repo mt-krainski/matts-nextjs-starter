@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { authCopy } from "@/lib/copy";
+import { config } from "@/lib/config";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
@@ -84,17 +85,11 @@ export default function LoginPage() {
           <div className="text-center text-xs text-gray-500">
             <p>
               {authCopy.legal.termsText}{" "}
-              <Link
-                href={process.env.NEXT_PUBLIC_TERMS_URL || "#"}
-                className="underline"
-              >
+              <Link href={config.urls.terms} className="underline">
                 {authCopy.legal.termsLink}
               </Link>{" "}
               {authCopy.legal.andText}{" "}
-              <Link
-                href={process.env.NEXT_PUBLIC_PRIVACY_URL || "#"}
-                className="underline"
-              >
+              <Link href={config.urls.privacy} className="underline">
                 {authCopy.legal.privacyLink}
               </Link>
             </p>
