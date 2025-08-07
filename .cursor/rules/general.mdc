@@ -14,12 +14,14 @@ This is a modern Next.js 15 application built with TypeScript, using the App Rou
 - **TypeScript 5** for type safety
 - **Tailwind CSS 4** for styling (with CSS variables)
 - **Turbopack** for fast development builds
+- **Storybook** for component development and documentation
 
 ### UI & Components
 - **shadcn/ui** components with style variant. When adding new components always use the shadcn CLI (like `npx shadcn@latest add ...`)
 - **Lucide React** for icons, use the `lucide-react` package, always prefer using the icons from there instead of creating your own
 - **clsx** and **tailwind-merge** for conditional styling
 - **tw-animate-css** for animations
+- Directory structure: shadcn/ui components are in `src/components/ui/`, complex and custom components are in `src/components/components/` in a Storybook structure. All these components should be exported in the `src/components/index.ts` file.
 
 ### Development Tools
 - **ESLint** with Next.js configuration
