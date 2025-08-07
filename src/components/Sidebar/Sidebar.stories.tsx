@@ -8,6 +8,7 @@ import {
   FileText as FileIcon,
 } from "lucide-react";
 import { AppSidebar, type SidebarItem, type SearchResult } from "./component";
+import { expect, within, fn } from "@storybook/test";
 
 const meta: Meta<typeof AppSidebar> = {
   title: "Components/Sidebar",
@@ -88,8 +89,8 @@ export const Default: Story = {
   args: {
     privateItems: mockPrivateItems,
     teamItems: mockTeamItems,
-    onSearch: (query) => console.log("Search:", query),
-    onHomeClick: () => console.log("Home clicked"),
+    onSearch: fn(),
+    onHomeClick: fn(),
     searchResults: mockSearchResults,
   },
   parameters: {
@@ -100,38 +101,205 @@ export const Default: Story = {
       },
     },
   },
+  play: async ({ canvasElement, args, userEvent }) => {
+    const canvas = within(canvasElement);
+
+    // Check that all expected elements are visible
+    await expect(canvas.getByText("Search...")).toBeInTheDocument();
+    await expect(canvas.getByText("Home")).toBeInTheDocument();
+    await expect(canvas.getByText("Private")).toBeInTheDocument();
+    await expect(canvas.getByText("Team")).toBeInTheDocument();
+    await expect(canvas.getByText("Example Private Item")).toBeInTheDocument();
+    await expect(canvas.getByText("Another Example")).toBeInTheDocument();
+    await expect(canvas.getByText("Example Team Item")).toBeInTheDocument();
+    await expect(canvas.getByText("Team Calendar")).toBeInTheDocument();
+
+    // Test Home button click
+    const homeButton = canvas.getByText("Home");
+    await userEvent.click(homeButton);
+    await expect(args.onHomeClick).toHaveBeenCalled();
+
+    // Test private item clicks
+    const privateItem1 = canvas.getByText("Example Private Item");
+    const privateItem2 = canvas.getByText("Another Example");
+    await userEvent.click(privateItem1);
+    await userEvent.click(privateItem2);
+
+    // Test team item clicks
+    const teamItem1 = canvas.getByText("Example Team Item");
+    const teamItem2 = canvas.getByText("Team Calendar");
+    await userEvent.click(teamItem1);
+    await userEvent.click(teamItem2);
+
+    // Test search functionality
+    const searchButton = canvas.getByText("Search...");
+    await userEvent.click(searchButton);
+
+    // Wait for modal to open and check search results
+    const searchModal = await within(document.body).findByRole("dialog");
+    await expect(searchModal).toBeInTheDocument();
+
+    const searchInput = within(searchModal).getByPlaceholderText(
+      "Type a command or search..."
+    );
+    await userEvent.type(searchInput, "test query");
+    await expect(args.onSearch).toHaveBeenCalledWith("test query");
+
+    // Test search result clicks
+    const chatResult = within(searchModal).getByText(
+      "Chat about React components"
+    );
+    await userEvent.click(chatResult);
+  },
 };
 
 export const WithActiveItems: Story = {
   args: {
-    ...Default.args,
     privateItems: [
       { ...mockPrivateItems[0], isActive: true },
       mockPrivateItems[1],
     ],
     teamItems: [mockTeamItems[0], { ...mockTeamItems[1], isActive: true }],
+    onSearch: fn(),
+    onHomeClick: fn(),
+    searchResults: mockSearchResults,
+  },
+  play: async ({ canvasElement, args, userEvent }) => {
+    const canvas = within(canvasElement);
+
+    // Check that all expected elements are visible
+    await expect(canvas.getByText("Search...")).toBeInTheDocument();
+    await expect(canvas.getByText("Home")).toBeInTheDocument();
+    await expect(canvas.getByText("Private")).toBeInTheDocument();
+    await expect(canvas.getByText("Team")).toBeInTheDocument();
+    await expect(canvas.getByText("Example Private Item")).toBeInTheDocument();
+    await expect(canvas.getByText("Another Example")).toBeInTheDocument();
+    await expect(canvas.getByText("Example Team Item")).toBeInTheDocument();
+    await expect(canvas.getByText("Team Calendar")).toBeInTheDocument();
+
+    // Check that active items are present and clickable
+    const activePrivateItem = canvas.getByText("Example Private Item");
+    const activeTeamItem = canvas.getByText("Team Calendar");
+    await expect(activePrivateItem).toBeInTheDocument();
+    await expect(activeTeamItem).toBeInTheDocument();
+
+    // Test clicks on active items
+    await userEvent.click(activePrivateItem);
+    await userEvent.click(activeTeamItem);
   },
 };
 
 export const WithoutPrivateItems: Story = {
   args: {
     teamItems: mockTeamItems,
-    onSearch: (query) => console.log("Search:", query),
-    onHomeClick: () => console.log("Home clicked"),
+    onSearch: fn(),
+    onHomeClick: fn(),
+  },
+  play: async ({ canvasElement, args, userEvent }) => {
+    const canvas = within(canvasElement);
+
+    // Check that expected elements are visible
+    await expect(canvas.getByText("Search...")).toBeInTheDocument();
+    await expect(canvas.getByText("Home")).toBeInTheDocument();
+    await expect(canvas.getByText("Team")).toBeInTheDocument();
+    await expect(canvas.getByText("Example Team Item")).toBeInTheDocument();
+    await expect(canvas.getByText("Team Calendar")).toBeInTheDocument();
+
+    // Check that private section is NOT visible
+    await expect(canvas.queryByText("Private")).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText("Example Private Item")
+    ).not.toBeInTheDocument();
+    await expect(canvas.queryByText("Another Example")).not.toBeInTheDocument();
+
+    // Test Home button click
+    const homeButton = canvas.getByText("Home");
+    await userEvent.click(homeButton);
+    await expect(args.onHomeClick).toHaveBeenCalled();
+
+    // Test team item clicks
+    const teamItem1 = canvas.getByText("Example Team Item");
+    const teamItem2 = canvas.getByText("Team Calendar");
+    await userEvent.click(teamItem1);
+    await userEvent.click(teamItem2);
   },
 };
 
 export const WithoutTeamItems: Story = {
   args: {
     privateItems: mockPrivateItems,
-    onSearch: (query) => console.log("Search:", query),
-    onHomeClick: () => console.log("Home clicked"),
+    onSearch: fn(),
+    onHomeClick: fn(),
+  },
+  play: async ({ canvasElement, args, userEvent }) => {
+    const canvas = within(canvasElement);
+
+    // Check that expected elements are visible
+    await expect(canvas.getByText("Search...")).toBeInTheDocument();
+    await expect(canvas.getByText("Home")).toBeInTheDocument();
+    await expect(canvas.getByText("Private")).toBeInTheDocument();
+    await expect(canvas.getByText("Example Private Item")).toBeInTheDocument();
+    await expect(canvas.getByText("Another Example")).toBeInTheDocument();
+
+    // Check that team section is NOT visible
+    await expect(canvas.queryByText("Team")).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText("Example Team Item")
+    ).not.toBeInTheDocument();
+    await expect(canvas.queryByText("Team Calendar")).not.toBeInTheDocument();
+
+    // Test Home button click
+    const homeButton = canvas.getByText("Home");
+    await userEvent.click(homeButton);
+    await expect(args.onHomeClick).toHaveBeenCalled();
+
+    // Test private item clicks
+    const privateItem1 = canvas.getByText("Example Private Item");
+    const privateItem2 = canvas.getByText("Another Example");
+    await userEvent.click(privateItem1);
+    await userEvent.click(privateItem2);
   },
 };
 
 export const Empty: Story = {
   args: {
-    onSearch: (query) => console.log("Search:", query),
-    onHomeClick: () => console.log("Home clicked"),
+    onSearch: fn(),
+    onHomeClick: fn(),
+  },
+  play: async ({ canvasElement, args, userEvent }) => {
+    const canvas = within(canvasElement);
+
+    // Check that only basic elements are visible
+    await expect(canvas.getByText("Search...")).toBeInTheDocument();
+    await expect(canvas.getByText("Home")).toBeInTheDocument();
+
+    // Check that no sections are visible
+    await expect(canvas.queryByText("Private")).not.toBeInTheDocument();
+    await expect(canvas.queryByText("Team")).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText("Example Private Item")
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText("Example Team Item")
+    ).not.toBeInTheDocument();
+
+    // Test Home button click
+    const homeButton = canvas.getByText("Home");
+    await userEvent.click(homeButton);
+    await expect(args.onHomeClick).toHaveBeenCalled();
+
+    // Test search functionality
+    const searchButton = canvas.getByText("Search...");
+    await userEvent.click(searchButton);
+
+    // Wait for modal to open
+    const searchModal = await within(document.body).findByRole("dialog");
+    await expect(searchModal).toBeInTheDocument();
+
+    const searchInput = within(searchModal).getByPlaceholderText(
+      "Type a command or search..."
+    );
+    await userEvent.type(searchInput, "test query");
+    await expect(args.onSearch).toHaveBeenCalledWith("test query");
   },
 };

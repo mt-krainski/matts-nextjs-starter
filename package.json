@@ -20,7 +20,8 @@
     "supabase:migration:list": "supabase migration list",
     "supabase:migrate": "npm run supabase:push && npm run supabase:types",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "vitest"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
