@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Navbar, type Workspace } from "./component";
-import { expect, within, fn } from "@storybook/test";
+import { expect, within, fn, waitFor } from "@storybook/test";
 
 const meta: Meta<typeof Navbar> = {
   title: "Components/Navbar",
@@ -67,7 +67,7 @@ export const Default: Story = {
     await userEvent.click(userButton);
 
     // Wait for user dropdown to open
-    const userDropdown = await within(document.body).findByRole("menu");
+    let userDropdown = await within(document.body).findByRole("menu");
     await expect(userDropdown).toBeInTheDocument();
 
     // Test user menu options
@@ -75,19 +75,35 @@ export const Default: Story = {
     await userEvent.click(accountOption);
     await expect(args.onAccountClick).toHaveBeenCalled();
 
+    await waitFor(() => {
+      expect(userDropdown).not.toBeInTheDocument();
+    });
+
     // Reopen user menu for settings test
     await userEvent.click(userButton);
-    const settingsDropdown = await within(document.body).findByRole("menu");
-    const settingsOption = within(settingsDropdown).getByText("Settings");
+    userDropdown = await within(document.body).findByRole("menu");
+    await expect(userDropdown).toBeInTheDocument();
+
+    const settingsOption = within(userDropdown).getByText("Settings");
     await userEvent.click(settingsOption);
     await expect(args.onSettingsClick).toHaveBeenCalled();
 
+    await waitFor(() => {
+      expect(userDropdown).not.toBeInTheDocument();
+    });
+
     // Reopen user menu for logout test
     await userEvent.click(userButton);
-    const logoutDropdown = await within(document.body).findByRole("menu");
-    const logoutOption = within(logoutDropdown).getByText("Log out");
+    userDropdown = await within(document.body).findByRole("menu");
+    await expect(userDropdown).toBeInTheDocument();
+
+    const logoutOption = within(userDropdown).getByText("Log out");
     await userEvent.click(logoutOption);
     await expect(args.onLogoutClick).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(userDropdown).not.toBeInTheDocument();
+    });
   },
 };
 
