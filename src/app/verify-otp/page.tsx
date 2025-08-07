@@ -4,7 +4,7 @@ import { verifyOtp, resendOtp } from "../auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components/components/Logo/component";
 import { authCopy } from "@/lib/copy";
 import { config } from "@/lib/config";
 import Link from "next/link";
