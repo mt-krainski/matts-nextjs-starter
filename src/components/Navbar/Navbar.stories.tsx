@@ -196,11 +196,7 @@ export const Empty: Story = {
     await expect(canvas.queryByText("John Doe")).not.toBeInTheDocument();
     await expect(canvas.queryByText("Acme Corp")).not.toBeInTheDocument();
 
-    // Logo should still be visible
-    const logo =
-      canvasElement.querySelector('[data-testid="logo"]') ||
-      canvasElement.querySelector("svg") ||
-      canvasElement.querySelector("img");
-    await expect(logo).toBeInTheDocument();
+    // Logo component should still be visible (check for the company name text)
+    await expect(canvas.getByTestId("logo")).toBeInTheDocument();
   },
 };
