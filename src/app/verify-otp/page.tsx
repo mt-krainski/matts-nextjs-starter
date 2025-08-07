@@ -1,6 +1,6 @@
 "use client";
 
-import { verifyOtp, resendOtp } from "../login/actions";
+import { verifyOtp, resendOtp } from "../auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -125,10 +125,10 @@ export default function VerifyOtpPage() {
             <ResendButton />
           </form>
 
-          {/* Back to Login Link */}
+          {/* Back to Auth Link */}
           <div className="text-center">
             <Link
-              href="/login"
+              href="/auth"
               className="text-sm text-gray-600 hover:text-gray-900"
             >
               {authCopy.verifyOtp.backLink}

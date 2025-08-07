@@ -22,16 +22,16 @@ function SubmitButton() {
       {pending ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-          {authCopy.login.submitButton}
+          {authCopy.auth.submitButton}
         </>
       ) : (
-        authCopy.login.submitButton
+        authCopy.auth.submitButton
       )}
     </Button>
   );
 }
 
-export default function LoginPage() {
+export default function AuthPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
@@ -45,9 +45,9 @@ export default function LoginPage() {
           {/* Title and Subtitle */}
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-gray-900">
-              {authCopy.login.title}
+              {authCopy.auth.title}
             </h1>
-            <p className="text-gray-600">{authCopy.login.subtitle}</p>
+            <p className="text-gray-600">{authCopy.auth.subtitle}</p>
           </div>
 
           {/* Form */}
@@ -57,29 +57,19 @@ export default function LoginPage() {
                 htmlFor="email"
                 className="text-sm font-medium text-gray-900"
               >
-                {authCopy.login.emailLabel}
+                {authCopy.auth.emailLabel}
               </Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder={authCopy.login.emailPlaceholder}
+                placeholder={authCopy.auth.emailPlaceholder}
                 required
                 className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
               />
             </div>
             <SubmitButton />
           </form>
-
-          {/* Sign Up Link */}
-          <div className="text-center">
-            <Link
-              href="/sign-up"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              {authCopy.login.signUpLink}
-            </Link>
-          </div>
 
           {/* Legal Disclosure */}
           <div className="text-center text-xs text-gray-500">
