@@ -30,8 +30,12 @@ function readEmailTemplate() {
     );
     let templateContent = fs.readFileSync(templatePath, "utf8");
 
-    // Replace company name in the template
-    templateContent = templateContent.replace(/Matt's Starter/g, COMPANY_NAME);
+    // Replace templated variables with actual company name
+    // TODO: review whether I don't prefer to use a proper template engine
+    templateContent = templateContent.replace(
+      /\{\{ \.CompanyName \}\}/g,
+      COMPANY_NAME
+    );
 
     return templateContent;
   } catch (error) {

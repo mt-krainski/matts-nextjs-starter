@@ -196,8 +196,8 @@ otp_expiry = 3600
 # content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.magic_link]
-subject = "Your verification code for Matt's Starter"
-content_path = "./templates/otp.html"
+subject = "Your verification code for {{ .CompanyName }}"
+content_path = "./templates/email-otp.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
