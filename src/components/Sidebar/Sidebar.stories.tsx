@@ -1,10 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Folder, Users, FileText, Calendar } from "lucide-react";
-import { Sidebar, type SidebarItem } from "./component";
+import {
+  Folder,
+  Users,
+  FileText,
+  Calendar,
+  MessageSquare,
+  FileText as FileIcon,
+} from "lucide-react";
+import { AppSidebar, type SidebarItem, type SearchResult } from "./component";
 
-const meta: Meta<typeof Sidebar> = {
+const meta: Meta<typeof AppSidebar> = {
   title: "Components/Sidebar",
-  component: Sidebar,
+  component: AppSidebar,
   parameters: {
     layout: "fullscreen",
   },
@@ -18,7 +25,7 @@ const meta: Meta<typeof Sidebar> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Sidebar>;
+type Story = StoryObj<typeof AppSidebar>;
 
 const mockPrivateItems: SidebarItem[] = [
   {
@@ -50,12 +57,48 @@ const mockTeamItems: SidebarItem[] = [
   },
 ];
 
+const mockSearchResults: SearchResult[] = [
+  {
+    id: "result-1",
+    title: "Chat about React components",
+    content:
+      "Discussion about building reusable UI components with React and TypeScript",
+    icon: MessageSquare,
+    onClick: () => console.log("Chat result clicked"),
+  },
+  {
+    id: "result-2",
+    title: "Project documentation",
+    content:
+      "Complete documentation for the current project setup and architecture",
+    icon: FileIcon,
+    onClick: () => console.log("Documentation result clicked"),
+  },
+  {
+    id: "result-3",
+    title: "API integration guide",
+    content:
+      "Step-by-step guide for integrating external APIs into the application",
+    icon: FileIcon,
+    onClick: () => console.log("API guide result clicked"),
+  },
+];
+
 export const Default: Story = {
   args: {
     privateItems: mockPrivateItems,
     teamItems: mockTeamItems,
     onSearch: (query) => console.log("Search:", query),
     onHomeClick: () => console.log("Home clicked"),
+    searchResults: mockSearchResults,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Click on the search input to open the search modal with search results.",
+      },
+    },
   },
 };
 
