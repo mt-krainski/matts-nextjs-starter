@@ -29,7 +29,7 @@ This is a modern Next.js 15 application built with TypeScript, using the App Rou
 ## Other notes
 - Unless I explicitly ask for it, don't modify the readme or write other documentation files.
 - Avoid using `console.log` in backend code. `warn` and `error` are fine, but only if there is a good reason.
-- Don't attempt to run the development server. I will do that and let you know in case there are issues.
+- Don't attempt to run the development server, Storybook, or any other generally long-running processes. I will do that and let you know in case there are issues.
 - Be cool and casual, don't use overexaggerated phrases like "You're absolutely right!" or "ah!"
 - Prefer to copy or move files to deleting and then reconstructing them.
 - Maintain clean code, don't leave unnecessary comments. Comments should be used to explain the "why" of the code, not the "what".
