@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Navbar, type Workspace } from "./component";
 import { expect, within, fn, waitFor } from "@storybook/test";
+import { withDropdown } from "@/test-utils/storybook";
 
 const meta: Meta<typeof Navbar> = {
   title: "Components/Navbar",
@@ -49,60 +50,35 @@ export const Default: Story = {
     await expect(canvas.getByText("Personal Workspace")).toBeInTheDocument();
     await expect(canvas.getByText("John Doe")).toBeInTheDocument();
 
-    // Test workspace selector click
-    const workspaceButton = canvas.getByText("Personal Workspace");
-    await userEvent.click(workspaceButton);
-
-    // Wait for dropdown to open and check workspace options
-    const workspaceDropdown = await within(document.body).findByRole("menu");
-    await expect(workspaceDropdown).toBeInTheDocument();
-
-    // Test workspace selection
-    const teamWorkspace = within(workspaceDropdown).getByText("Acme Corp");
-    await userEvent.click(teamWorkspace);
-    await expect(args.onWorkspaceChange).toHaveBeenCalledWith("team-1");
+    // Workspace dropdown
+    await withDropdown(
+      canvas.getByText("Personal Workspace"),
+      userEvent,
+      async (menu) => {
+        await userEvent.click(within(menu).getByText("Acme Corp"));
+        await expect(args.onWorkspaceChange).toHaveBeenCalledWith("team-1");
+      }
+    );
 
     // Test user menu click
     const userButton = canvas.getByText("John Doe");
-    await userEvent.click(userButton);
-
-    // Wait for user dropdown to open
-    let userDropdown = await within(document.body).findByRole("menu");
-    await expect(userDropdown).toBeInTheDocument();
-
-    // Test user menu options
-    const accountOption = within(userDropdown).getByText("Account");
-    await userEvent.click(accountOption);
-    await expect(args.onAccountClick).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(userDropdown).not.toBeInTheDocument();
+    await withDropdown(userButton, userEvent, async (menu) => {
+      await userEvent.click(within(menu).getByText("Account"));
+      await expect(args.onAccountClick).toHaveBeenCalled();
     });
 
     // Reopen user menu for settings test
-    await userEvent.click(userButton);
-    userDropdown = await within(document.body).findByRole("menu");
-    await expect(userDropdown).toBeInTheDocument();
-
-    const settingsOption = within(userDropdown).getByText("Settings");
-    await userEvent.click(settingsOption);
-    await expect(args.onSettingsClick).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(userDropdown).not.toBeInTheDocument();
+    await withDropdown(userButton, userEvent, async (menu) => {
+      const settingsOption = within(menu).getByText("Settings");
+      await userEvent.click(settingsOption);
+      await expect(args.onSettingsClick).toHaveBeenCalled();
     });
 
     // Reopen user menu for logout test
-    await userEvent.click(userButton);
-    userDropdown = await within(document.body).findByRole("menu");
-    await expect(userDropdown).toBeInTheDocument();
-
-    const logoutOption = within(userDropdown).getByText("Log out");
-    await userEvent.click(logoutOption);
-    await expect(args.onLogoutClick).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(userDropdown).not.toBeInTheDocument();
+    await withDropdown(userButton, userEvent, async (menu) => {
+      const logoutOption = within(menu).getByText("Log out");
+      await userEvent.click(logoutOption);
+      await expect(args.onLogoutClick).toHaveBeenCalled();
     });
   },
 };
