@@ -34,3 +34,24 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 - Database setup with profiles table
 - Modern UI components
 - TypeScript throughout
+
+## TODOs
+
+Phase 1:
+
+- CI/CD pipeline & testing setup - Templates for deployments and automated tests
+- Teams and workspaces for secure, scalable multi-user setups
+- Theming & dark mode toggle - Using ShadCN UI for consistent styling
+
+At this point, the starter is ready to be used to build MVP-grade SaaS applications.
+
+Phase 2:
+
+- Admin dashboard
+- Stripe payments - Subscriptions (monthly/yearly recurring) + token/credit-based purchases + mechanism to override and grant credits manually
+- Feature flagging interface - Enable/disable features per workspace, team, or user
+- Analytics integration - Pre-wired for Google Analytics or another provider
+- Internationalization (i18n) - Multi-language and region support
+- Help desk integration - Embedded support system with a chat widget
+
+At this point, the starter is ready to be used to build production-grade SaaS applications.
