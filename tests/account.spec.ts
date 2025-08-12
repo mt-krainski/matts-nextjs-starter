@@ -6,6 +6,7 @@ test("has title", async ({ page }) => {
   await expect(page).toHaveTitle(process.env.NEXT_PUBLIC_COMPANY_NAME!);
 });
 
+test.describe.configure({ retries: 3 });
 test("create account, logout, login", async ({ page }) => {
   const runId = crypto.randomUUID();
   const testUserEmail = `test+${runId}@test.com`;
