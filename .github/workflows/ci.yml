@@ -9,9 +9,6 @@ jobs:
     services:
       docker: # runners have docker preinstalled; this ensures daemon is available
         image: docker:24-dind
-        ports:
-          - 54321:54321 # Supabase API
-          - 54324:54324 # Inbucket
         options: >-
           --privileged
           --health-cmd "sleep 3"
