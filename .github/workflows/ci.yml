@@ -14,7 +14,7 @@ jobs:
           version: latest
 
       - run: |
-          supabase start
+          supabase start --debug
           sleep 10
           npx supabase status --output env > .env.local
           cat .env.local
@@ -37,6 +37,7 @@ jobs:
           SUPABASE_URL: ${{ env.SUPABASE_URL}}
           SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY}}
           SUPABASE_INBUCKET_URL: ${{ env.SUPABASE_INBUCKET_URL}}
+          NEXT_PUBLIC_COMPANY_NAME: Test Company
         run: |
           npm run test:e2e
 
