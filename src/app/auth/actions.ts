@@ -19,7 +19,7 @@ export async function sendOtp(formData: FormData) {
     redirect("/error");
   }
 
-  redirect(`/verify-otp?email=${encodeURIComponent(email)}`);
+  redirect(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
 }
 
 export async function verifyOtp(formData: FormData) {
@@ -57,5 +57,5 @@ export async function resendOtp(formData: FormData) {
     redirect("/error");
   }
 
-  redirect(`/verify-otp?email=${encodeURIComponent(email)}&resent=true`);
+  redirect(`/auth/verify-otp?email=${encodeURIComponent(email)}&resent=true`);
 }

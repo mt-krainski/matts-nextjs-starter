@@ -20,10 +20,15 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [username, setUsername] = useState<string | null>(null);
   const [website, setWebsite] = useState<string | null>(null);
   const [avatar_url, setAvatarUrl] = useState<string | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
+  console.log("account form rerender");
 
   const getProfile = useCallback(async () => {
     if (!user) {
-      alert("User is not defined.");
+      setMessage({ text: "User is not defined.", type: "error" });
       return;
     }
     try {
@@ -45,7 +50,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       }
     } catch (error) {
       console.error(error);
-      alert("Error loading user data!");
+      setMessage({ text: "Error loading user data!", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -67,6 +72,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   }) {
     try {
       setLoading(true);
+      setMessage(null);
       const { error } = await supabase.from("profiles").upsert({
         id: user?.id as string,
         full_name: fullname,
@@ -76,10 +82,10 @@ export default function AccountForm({ user }: { user: User | null }) {
         updated_at: new Date().toISOString(),
       });
       if (error) throw error;
-      alert("Profile updated!");
+      setMessage({ text: "Profile updated successfully!", type: "success" });
     } catch (error) {
       console.error(error);
-      alert("Error updating the data!");
+      setMessage({ text: "Error updating the data!", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -94,6 +100,18 @@ export default function AccountForm({ user }: { user: User | null }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {message && (
+          <div
+            className={`text-sm p-3 rounded-md ${
+              message.type === "success"
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-red-50 text-red-700 border border-red-200"
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" value={user?.email || ""} disabled />
