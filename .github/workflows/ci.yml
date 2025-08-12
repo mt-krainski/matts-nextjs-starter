@@ -32,7 +32,7 @@ jobs:
           supabase db start
           sleep 10
           npx supabase status --output env > .env.local
-          echo .env.local
+          cat .env.local
           source .env.local
           echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
@@ -44,10 +44,6 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps
-
-      - name: Apply migrations
-        run: |
-          npx supabase db reset --no-confirm
 
       - name: Run e2e tests
         env:
