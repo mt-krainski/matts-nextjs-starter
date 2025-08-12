@@ -34,9 +34,7 @@ jobs:
 
       - name: Start local Supabase
         run: |
-          npx supabase start \
-            --enable auth,db,rest,realtime \
-            --no-open
+          npx supabase start --exclude studio,edge-runtime,logflare,vector,supavisor,imgproxy,kong,postgres-meta
           # Wait for Supabase to start
           sleep 10
           npx supabase status --output env > .env.local
