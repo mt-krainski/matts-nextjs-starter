@@ -1,0 +1,72 @@
+name: ci
+on:
+  pull_request:
+  push:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker: # runners have docker preinstalled; this ensures daemon is available
+        image: docker:24-dind
+        ports:
+          - 54321:54321 # Supabase API
+          - 54324:54324 # Inbucket
+        options: >-
+          --privileged
+          --health-cmd "sleep 3"
+          --health-interval 5s
+          --health-retries 20
+
+    env:
+      SUPABASE_URL: http://localhost:54321
+      SUPABASE_ANON_KEY: test-anon-key
+      SUPABASE_SERVICE_ROLE_KEY: test-service-role-key
+      SUPABASE_JWT_SECRET: test-jwt-secret
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Start local Supabase
+        run: |
+          supabase start \
+            --enable auth,db,rest,realtime \
+            --no-open
+          supabase status --output env > .env.local
+          source .env.local
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_URL=$API_URL" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_INBUCKET_URL=$INBUCKET_URL" >> $GITHUB_ENV
+
+      - name: Wait for DB
+        run: |
+          # Replace with a proper wait-for-it against port 54322 or a psql check
+          sleep 10
+
+      - name: Apply migrations
+        run: |
+          supabase db reset --no-confirm
+
+      - name: Run e2e tests
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL}}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY}}
+          SUPABASE_URL: ${{ env.SUPABASE_URL}}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY}}
+          SUPABASE_INBUCKET_URL: ${{ env.SUPABASE_INBUCKET_URL}}
+        run: |
+          npm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 30
