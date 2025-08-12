@@ -34,10 +34,12 @@ jobs:
 
       - name: Start local Supabase
         run: |
-          supabase start \
+          npx supabase start \
             --enable auth,db,rest,realtime \
             --no-open
-          supabase status --output env > .env.local
+          # Wait for Supabase to start
+          sleep 10
+          npx supabase status --output env > .env.local
           source .env.local
           echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
@@ -45,14 +47,9 @@ jobs:
           echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
           echo "SUPABASE_INBUCKET_URL=$INBUCKET_URL" >> $GITHUB_ENV
 
-      - name: Wait for DB
-        run: |
-          # Replace with a proper wait-for-it against port 54322 or a psql check
-          sleep 10
-
       - name: Apply migrations
         run: |
-          supabase db reset --no-confirm
+          npx supabase db reset --no-confirm
 
       - name: Run e2e tests
         env:
