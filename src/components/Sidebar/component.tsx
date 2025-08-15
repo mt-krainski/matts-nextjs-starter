@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Home, Folder, Users } from "lucide-react";
+import { Search, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -201,7 +200,7 @@ export function AppSidebar({
                 </div>
               ) : searchQuery ? (
                 <div className="text-sm text-muted-foreground px-2 py-1">
-                  No results found for "{searchQuery}"
+                  No results found for &quot;{searchQuery}&quot;
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground px-2 py-1">

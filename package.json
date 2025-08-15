@@ -42,6 +42,9 @@
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.3.1"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.0",
     "@eslint/eslintrc": "^3",
@@ -52,7 +55,7 @@
     "@storybook/addon-vitest": "^9.1.1",
     "@storybook/nextjs-vite": "^9.1.1",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/browser": "^3.2.4",
@@ -62,6 +65,7 @@
     "eslint-config-next": "15.4.5",
     "eslint-plugin-storybook": "^9.1.1",
     "license-checker": "^25.0.1",
+    "markdown-to-jsx": "^7.7.13",
     "playwright": "^1.54.2",
     "storybook": "^9.1.1",
     "supabase": "^2.33.5",

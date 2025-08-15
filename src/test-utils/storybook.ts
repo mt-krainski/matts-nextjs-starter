@@ -1,10 +1,8 @@
-import { expect, within, waitFor } from "@storybook/test";
-
-type StorybookUserEvent = typeof import("@storybook/test").userEvent;
+import { expect, within, waitFor, type UserEventObject } from "storybook/test";
 
 export async function withDropdown(
   triggerElement: HTMLElement,
-  userEvent: StorybookUserEvent,
+  userEvent: UserEventObject,
   onOpen: (menuEl: HTMLElement) => Promise<void> | void,
   options?: { role?: string; root?: HTMLElement }
 ) {

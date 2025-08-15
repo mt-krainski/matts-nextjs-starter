@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
   Folder,
   Users,
@@ -8,7 +8,7 @@ import {
   FileText as FileIcon,
 } from "lucide-react";
 import { AppSidebar, type SidebarItem, type SearchResult } from "./component";
-import { expect, within, fn } from "@storybook/test";
+import { expect, within, fn } from "storybook/test";
 
 const meta: Meta<typeof AppSidebar> = {
   title: "Components/Sidebar",
@@ -164,7 +164,7 @@ export const WithActiveItems: Story = {
     onHomeClick: fn(),
     searchResults: mockSearchResults,
   },
-  play: async ({ canvasElement, args, userEvent }) => {
+  play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement);
 
     // Check that all expected elements are visible
