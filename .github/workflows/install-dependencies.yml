@@ -9,6 +9,8 @@ on:
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       cache-key: ${{ steps.set-cache-key.outputs.key }}
 
