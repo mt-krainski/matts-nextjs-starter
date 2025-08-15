@@ -1,13 +1,97 @@
-name: ci
+name: CI
 on:
-  pull_request:
   push:
+    branches:
+      - main
+  pull_request:
+
 jobs:
-  test:
+  install-dependencies:
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.set-cache-key.outputs.key }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set cache key
+        id: set-cache-key
+        run: echo "key=package-lock.json.${{ hashFiles('package-lock.json') }}" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ steps.set-cache-key.outputs.key }}
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: npm ci
+
+  lint:
+    name: Lint
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore dependencies from cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ needs.install-dependencies.outputs.cache-key }}
+
+      - name: Lint
+        run: |
+          npm run lint
+
+  build:
+    name: Build
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore dependencies from cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ needs.install-dependencies.outputs.cache-key }}
+
+      - name: Try build
+        run: |
+          npm run build
+
+  test:
+    name: Unit and ComponentTests
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore dependencies from cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ needs.install-dependencies.outputs.cache-key }}
+
+      - name: Test
+        run: |
+          npm run test
+
+  e2e:
+    name: End to End Tests
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore dependencies from cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ needs.install-dependencies.outputs.cache-key }}
 
       - uses: supabase/setup-cli@v1
         with:
@@ -25,9 +109,8 @@ jobs:
           echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
           echo "SUPABASE_INBUCKET_URL=$INBUCKET_URL" >> $GITHUB_ENV
 
-      - name: Install dependencies
+      - name: Install Playwright dependencies
         run: |
-          npm ci
           npx playwright install --with-deps
 
       - name: Run e2e tests
