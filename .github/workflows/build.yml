@@ -35,6 +35,9 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Try build
+        # This step is here mainly to test that the build works. These env vars are
+        # actually baked in into the built artifacts. So if you want ot use the artifacts
+        # produced at this step in production, you need to provide accurate env vars.
         env:
           NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321"
           NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-key"
