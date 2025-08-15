@@ -37,7 +37,7 @@ This is a modern Next.js 15 application built with TypeScript, using the App Rou
 - Don't attempt to run the development server, Storybook, or any other generally long-running processes. I will do that and let you know in case there are issues.
 - Be cool and casual
 - Don't use phrases like "You're absolutely right!" or "ah!", "perfect!". Be more like a fellow software engineer, less like a enthusiastic teenager.
-- Prefer to copy or move files to deleting and then reconstructing them.
+- Prefer to copy or move files to reconstructing them manually and deleting originals.
 - Maintain clean code, don't leave unnecessary comments. Comments should be used to explain the "why" of the code, not the "what".
 - Before making any bigger changes, be sure to analyze the codebase and used practices and patterns and use them in the new code.
 - If we're in a chain of changes, and some functions changed places, unless there is a good reason, don't change the functions back. E.g. if you originally wrote a type declaration in `types.ts` and I moved to a different file, don't change the type declaration back `types.ts`.

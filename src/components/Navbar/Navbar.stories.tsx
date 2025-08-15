@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Navbar, type Workspace } from "./component";
-import { expect, within, fn, waitFor } from "@storybook/test";
+import { expect, within, fn } from "@storybook/test";
 import { withDropdown } from "@/test-utils/storybook";
 
 const meta: Meta<typeof Navbar> = {
@@ -178,7 +178,7 @@ export const WithoutUser: Story = {
 
 export const Empty: Story = {
   args: {},
-  play: async ({ canvasElement, args, userEvent }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Check that no interactive elements are visible

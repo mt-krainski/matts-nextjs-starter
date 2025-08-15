@@ -1,4 +1,4 @@
-import { useState } from "react";
+import Image from "next/image";
 import {
   User,
   Settings,
@@ -107,9 +107,11 @@ export function Navbar({
               className="flex items-center gap-2"
             >
               {user.avatar ? (
-                <img
+                <Image
                   src={user.avatar}
                   alt={user.name}
+                  width={24}
+                  height={24}
                   className="h-6 w-6 rounded-full"
                 />
               ) : (

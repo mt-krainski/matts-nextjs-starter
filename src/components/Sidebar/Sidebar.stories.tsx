@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
   Folder,
   Users,
@@ -164,7 +164,7 @@ export const WithActiveItems: Story = {
     onHomeClick: fn(),
     searchResults: mockSearchResults,
   },
-  play: async ({ canvasElement, args, userEvent }) => {
+  play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement);
 
     // Check that all expected elements are visible

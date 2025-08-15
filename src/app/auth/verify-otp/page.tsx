@@ -9,7 +9,7 @@ import { authCopy } from "@/lib/copy";
 import { config } from "@/lib/config";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useFormStatus } from "react-dom";
 
 function VerifyButton() {
@@ -54,7 +54,7 @@ function ResendButton() {
   );
 }
 
-export default function VerifyOtpPage() {
+function VerifyOtpContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const resent = searchParams.get("resent") === "true";
@@ -68,6 +68,79 @@ export default function VerifyOtpPage() {
   }, [showMessage]);
 
   return (
+    <div className="w-full max-w-sm space-y-6">
+      {/* Title and Subtitle */}
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {authCopy.verifyOtp.title}
+        </h1>
+        <p className="text-gray-600">{authCopy.verifyOtp.subtitle}</p>
+        {email && <p className="text-sm text-gray-500 font-medium">{email}</p>}
+      </div>
+
+      {/* Success Message */}
+      {showMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
+          Verification code resent successfully!
+        </div>
+      )}
+
+      {/* Verification Form */}
+      <form className="space-y-4" action={verifyOtp}>
+        <input type="hidden" name="email" value={email} />
+        <div className="space-y-2">
+          <Label htmlFor="token" className="text-sm font-medium text-gray-900">
+            {authCopy.verifyOtp.otpLabel}
+          </Label>
+          <Input
+            id="token"
+            name="token"
+            type="text"
+            placeholder={authCopy.verifyOtp.otpPlaceholder}
+            required
+            maxLength={6}
+            pattern="[0-9]{6}"
+            className="border-gray-300 focus:border-gray-900 focus:ring-gray-900 text-center text-lg tracking-widest"
+          />
+        </div>
+        <VerifyButton />
+      </form>
+
+      {/* Resend Code Form */}
+      <form className="text-center" action={resendOtp}>
+        <input type="hidden" name="email" value={email} />
+        <ResendButton />
+      </form>
+
+      {/* Back to Auth Link */}
+      <div className="text-center">
+        <Link
+          href="/auth"
+          className="text-sm text-gray-600 hover:text-gray-900"
+        >
+          {authCopy.verifyOtp.backLink}
+        </Link>
+      </div>
+
+      {/* Legal Disclosure */}
+      <div className="text-center text-xs text-gray-500">
+        <p>
+          {authCopy.legal.termsText}{" "}
+          <Link href={config.urls.terms} className="underline">
+            {authCopy.legal.termsLink}
+          </Link>{" "}
+          {authCopy.legal.andText}{" "}
+          <Link href={config.urls.privacy} className="underline">
+            {authCopy.legal.privacyLink}
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function VerifyOtpPage() {
+  return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
       <header className="p-6">
@@ -76,79 +149,19 @@ export default function VerifyOtpPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-6">
-        <div className="w-full max-w-sm space-y-6">
-          {/* Title and Subtitle */}
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {authCopy.verifyOtp.title}
-            </h1>
-            <p className="text-gray-600">{authCopy.verifyOtp.subtitle}</p>
-            {email && (
-              <p className="text-sm text-gray-500 font-medium">{email}</p>
-            )}
-          </div>
-
-          {/* Success Message */}
-          {showMessage && (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
-              Verification code resent successfully!
+        <Suspense
+          fallback={
+            <div className="w-full max-w-sm space-y-6 text-center">
+              <div className="animate-pulse space-y-4">
+                <div className="h-8 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-32 bg-gray-200 rounded"></div>
+              </div>
             </div>
-          )}
-
-          {/* Verification Form */}
-          <form className="space-y-4" action={verifyOtp}>
-            <input type="hidden" name="email" value={email} />
-            <div className="space-y-2">
-              <Label
-                htmlFor="token"
-                className="text-sm font-medium text-gray-900"
-              >
-                {authCopy.verifyOtp.otpLabel}
-              </Label>
-              <Input
-                id="token"
-                name="token"
-                type="text"
-                placeholder={authCopy.verifyOtp.otpPlaceholder}
-                required
-                maxLength={6}
-                pattern="[0-9]{6}"
-                className="border-gray-300 focus:border-gray-900 focus:ring-gray-900 text-center text-lg tracking-widest"
-              />
-            </div>
-            <VerifyButton />
-          </form>
-
-          {/* Resend Code Form */}
-          <form className="text-center" action={resendOtp}>
-            <input type="hidden" name="email" value={email} />
-            <ResendButton />
-          </form>
-
-          {/* Back to Auth Link */}
-          <div className="text-center">
-            <Link
-              href="/auth"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              {authCopy.verifyOtp.backLink}
-            </Link>
-          </div>
-
-          {/* Legal Disclosure */}
-          <div className="text-center text-xs text-gray-500">
-            <p>
-              {authCopy.legal.termsText}{" "}
-              <Link href={config.urls.terms} className="underline">
-                {authCopy.legal.termsLink}
-              </Link>{" "}
-              {authCopy.legal.andText}{" "}
-              <Link href={config.urls.privacy} className="underline">
-                {authCopy.legal.privacyLink}
-              </Link>
-            </p>
-          </div>
-        </div>
+          }
+        >
+          <VerifyOtpContent />
+        </Suspense>
       </main>
     </div>
   );
