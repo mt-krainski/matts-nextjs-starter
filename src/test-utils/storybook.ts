@@ -1,6 +1,6 @@
-import { expect, within, waitFor } from "@storybook/test";
+import { expect, within, waitFor } from "storybook/test";
 
-type StorybookUserEvent = typeof import("@storybook/test").userEvent;
+type StorybookUserEvent = typeof import("storybook/test").userEvent;
 
 export async function withDropdown(
   triggerElement: HTMLElement,

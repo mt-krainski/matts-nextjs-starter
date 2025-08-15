@@ -8,7 +8,7 @@ import {
   FileText as FileIcon,
 } from "lucide-react";
 import { AppSidebar, type SidebarItem, type SearchResult } from "./component";
-import { expect, within, fn } from "@storybook/test";
+import { expect, within, fn } from "storybook/test";
 
 const meta: Meta<typeof AppSidebar> = {
   title: "Components/Sidebar",
