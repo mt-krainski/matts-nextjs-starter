@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Logo, ThemeToggle } from "@/components";
+import { Logo } from "@/components";
 
 export interface Workspace {
   id: string;
@@ -99,7 +99,6 @@ export function Navbar({
 
       {/* Right: Theme Toggle and User Menu */}
       <div className="flex items-center gap-2">
-        <ThemeToggle />
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
