@@ -35,7 +35,7 @@ export function ThemeToggle({ variant = "icon" }: ThemeToggleProps) {
             </>
           ) : (
             <>
-              <div className="flex items-center gap-2 scale-100 dark:hidden">
+              <div className="flex items-center gap-2 dark:hidden">
                 <Sun className="h-4 w-4" />
                 <span>Light</span>
               </div>
