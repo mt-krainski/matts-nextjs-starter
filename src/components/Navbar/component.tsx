@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Logo } from "@/components";
+import { Logo, ThemeToggle } from "@/components";
 
 export interface Workspace {
   id: string;
@@ -97,56 +97,61 @@ export function Navbar({
         )}
       </div>
 
-      {/* Right: User Menu */}
-      {user && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              {user.avatar ? (
-                <Image
-                  src={user.avatar}
-                  alt={user.name}
-                  width={24}
-                  height={24}
-                  className="h-6 w-6 rounded-full"
-                />
-              ) : (
-                <User className="h-5 w-5" />
-              )}
-              <span className="hidden sm:inline-block">{user.name}</span>
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[200px]">
-            <DropdownMenuLabel>
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user.email}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onAccountClick}>
-              <User className="h-4 w-4" />
-              Account
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onSettingsClick}>
-              <Settings className="h-4 w-4" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={onLogoutClick}>
-              <LogOut className="h-4 w-4" />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+      {/* Right: Theme Toggle and User Menu */}
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {user.avatar ? (
+                  <Image
+                    src={user.avatar}
+                    alt={user.name}
+                    width={24}
+                    height={24}
+                    className="h-6 w-6 rounded-full"
+                  />
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
+                <span className="hidden sm:inline-block">{user.name}</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[200px]">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user.name}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onAccountClick}>
+                <User className="h-4 w-4" />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onSettingsClick}>
+                <Settings className="h-4 w-4" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" onClick={onLogoutClick}>
+                <LogOut className="h-4 w-4" />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   );
 }
