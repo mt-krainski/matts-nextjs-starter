@@ -2,7 +2,12 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "system";
+const validThemes = ["light", "dark", "system"] as const;
+type Theme = (typeof validThemes)[number];
+
+function isValidTheme(value: unknown): value is Theme {
+  return validThemes.includes(value as Theme);
+}
 
 interface ThemeContextType {
   theme: Theme;
@@ -18,8 +23,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Load theme from localStorage on mount
-    const savedTheme = localStorage.getItem("theme") as Theme;
-    if (savedTheme) {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme && isValidTheme(savedTheme)) {
       setTheme(savedTheme);
     }
   }, []);
