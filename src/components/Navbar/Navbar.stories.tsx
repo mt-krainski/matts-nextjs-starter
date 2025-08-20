@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Navbar, type Workspace } from "./component";
 import { expect, within, fn } from "storybook/test";
 import { withDropdown } from "@/test-utils/storybook";
+import { ThemeProvider } from "../ThemeProvider/component";
 
 const meta: Meta<typeof Navbar> = {
   title: "Components/Navbar",
@@ -11,9 +12,11 @@ const meta: Meta<typeof Navbar> = {
   },
   decorators: [
     (Story) => (
-      <div className="h-16 w-full">
-        <Story />
-      </div>
+      <ThemeProvider>
+        <div className="h-16 w-full">
+          <Story />
+        </div>
+      </ThemeProvider>
     ),
   ],
 };
