@@ -39,7 +39,6 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 Phase 1:
 
-- CI/CD pipeline & testing setup - Templates for deployments and automated tests
 - Teams and workspaces for secure, scalable multi-user setups
 - Theming & dark mode toggle - Using ShadCN UI for consistent styling
 
