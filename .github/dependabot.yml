@@ -11,3 +11,10 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
+      node-packages:
+        patterns:
+          - "@types/node"
+          - "node"
+        update-types:
+          - "patch"
+          - "minor"
