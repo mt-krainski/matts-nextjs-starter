@@ -40,7 +40,6 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 Phase 1:
 
 - Teams and workspaces for secure, scalable multi-user setups
-- Theming & dark mode toggle - Using ShadCN UI for consistent styling
 
 At this point, the starter is ready to be used to build MVP-grade SaaS applications.
 
