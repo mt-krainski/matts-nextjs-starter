@@ -22,7 +22,6 @@ import { Logo } from "@/components";
 export interface Workspace {
   id: string;
   name: string;
-  type: "personal" | "team";
 }
 
 export interface NavbarProps {
@@ -69,11 +68,7 @@ export function Navbar({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2">
-                {selectedWorkspace?.type === "team" ? (
-                  <Building2 className="h-4 w-4" />
-                ) : (
-                  <UserIcon className="h-4 w-4" />
-                )}
+                <Building2 className="h-4 w-4" />
                 <span className="truncate">{selectedWorkspace?.name}</span>
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -84,11 +79,7 @@ export function Navbar({
                   key={workspace.id}
                   onClick={() => onWorkspaceChange?.(workspace.id)}
                 >
-                  {workspace.type === "team" ? (
-                    <Building2 className="h-4 w-4" />
-                  ) : (
-                    <UserIcon className="h-4 w-4" />
-                  )}
+                  <Building2 className="h-4 w-4" />
                   <span className="truncate">{workspace.name}</span>
                 </DropdownMenuItem>
               ))}

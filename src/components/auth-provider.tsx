@@ -32,8 +32,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const supabase = useMemo(() => createClient(), []);
 
-  console.log("auth provider rerender");
-
   useEffect(() => {
     const getUser = async () => {
       const {

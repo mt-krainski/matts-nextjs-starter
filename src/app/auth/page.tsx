@@ -17,7 +17,7 @@ function SubmitButton() {
     <Button
       type="submit"
       disabled={pending}
-      className="w-full bg-gray-900 hover:bg-gray-800"
+      className="w-full bg-primary hover:bg-primary/90"
     >
       {pending ? (
         <>
@@ -33,7 +33,7 @@ function SubmitButton() {
 
 export default function AuthPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="p-6">
         <Logo />
@@ -44,10 +44,10 @@ export default function AuthPage() {
         <div className="w-full max-w-sm space-y-6">
           {/* Title and Subtitle */}
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-foreground">
               {authCopy.auth.title}
             </h1>
-            <p className="text-gray-600">{authCopy.auth.subtitle}</p>
+            <p className="text-muted-foreground">{authCopy.auth.subtitle}</p>
           </div>
 
           {/* Form */}
@@ -55,7 +55,7 @@ export default function AuthPage() {
             <div className="space-y-2">
               <Label
                 htmlFor="email"
-                className="text-sm font-medium text-gray-900"
+                className="text-sm font-medium text-foreground"
               >
                 {authCopy.auth.emailLabel}
               </Label>
@@ -65,14 +65,14 @@ export default function AuthPage() {
                 type="email"
                 placeholder={authCopy.auth.emailPlaceholder}
                 required
-                className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                className="border-border focus:border-primary focus:ring-primary"
               />
             </div>
             <SubmitButton />
           </form>
 
           {/* Legal Disclosure */}
-          <div className="text-center text-xs text-gray-500">
+          <div className="text-center text-xs text-muted-foreground">
             <p>
               {authCopy.legal.termsText}{" "}
               <Link href={config.urls.terms} className="underline">

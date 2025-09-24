@@ -104,47 +104,78 @@ declare
   new_data jsonb;
   table_name text;
   record_id text;
+  actor_id uuid;
 begin
   table_name := tg_table_name;
   
   if tg_op = 'INSERT' then
     new_data = to_jsonb(new);
+
+    if table_name = 'user_workspaces' then
+      record_id := new.user_id || ':' || new.workspace_id;
+      actor_id := new.user_id;
+    elsif table_name = 'user_teams' then
+      record_id := new.user_id || ':' || new.team_id;
+      actor_id := new.user_id;
+    else
+      record_id := new.id::text;
+      actor_id := null;
+    end if;
+
+    actor_id := coalesce(auth.uid(), actor_id, '00000000-0000-0000-0000-000000000000'::uuid);
+
     insert into public.role_audit_log (table_name, record_id, user_id, action, new_values)
-    values (table_name, 
-            case 
-              when table_name = 'user_workspaces' then new.user_id || ':' || new.workspace_id
-              when table_name = 'user_teams' then new.user_id || ':' || new.team_id
-              else new.id::text
-            end,
-            coalesce(auth.uid(), '00000000-0000-0000-0000-000000000000'::uuid),
+    values (table_name,
+            record_id,
+            actor_id,
             'insert',
             new_data);
     return new;
   elsif tg_op = 'UPDATE' then
     old_data = to_jsonb(old);
     new_data = to_jsonb(new);
+
+    if table_name = 'user_workspaces' then
+      record_id := new.user_id || ':' || new.workspace_id;
+      actor_id := new.user_id;
+    elsif table_name = 'user_teams' then
+      record_id := new.user_id || ':' || new.team_id;
+      actor_id := new.user_id;
+    else
+      record_id := new.id::text;
+      actor_id := null;
+    end if;
+
+    actor_id := coalesce(auth.uid(), actor_id, '00000000-0000-0000-0000-000000000000'::uuid);
+
     insert into public.role_audit_log (table_name, record_id, user_id, action, old_values, new_values)
     values (table_name,
-            case 
-              when table_name = 'user_workspaces' then new.user_id || ':' || new.workspace_id
-              when table_name = 'user_teams' then new.user_id || ':' || new.team_id
-              else new.id::text
-            end,
-            coalesce(auth.uid(), '00000000-0000-0000-0000-000000000000'::uuid),
+            record_id,
+            actor_id,
             'update',
             old_data,
             new_data);
     return new;
   elsif tg_op = 'DELETE' then
     old_data = to_jsonb(old);
+
+    if table_name = 'user_workspaces' then
+      record_id := old.user_id || ':' || old.workspace_id;
+      actor_id := old.user_id;
+    elsif table_name = 'user_teams' then
+      record_id := old.user_id || ':' || old.team_id;
+      actor_id := old.user_id;
+    else
+      record_id := old.id::text;
+      actor_id := null;
+    end if;
+
+    actor_id := coalesce(auth.uid(), actor_id, '00000000-0000-0000-0000-000000000000'::uuid);
+
     insert into public.role_audit_log (table_name, record_id, user_id, action, old_values)
     values (table_name,
-            case 
-              when table_name = 'user_workspaces' then old.user_id || ':' || old.workspace_id
-              when table_name = 'user_teams' then old.user_id || ':' || old.team_id
-              else old.id::text
-            end,
-            coalesce(auth.uid(), '00000000-0000-0000-0000-000000000000'::uuid),
+            record_id,
+            actor_id,
             'delete',
             old_data);
     return old;
@@ -167,142 +198,130 @@ alter table user_workspaces enable row level security;
 alter table user_teams enable row level security;
 alter table role_audit_log enable row level security;
 
+-- Helper functions for RLS checks
+create or replace function workspace_is_member(workspace_uuid uuid)
+returns boolean
+set search_path = public
+security definer
+language sql
+as $$
+  select exists (
+    select 1
+    from public.user_workspaces uw
+    where uw.workspace_id = workspace_uuid
+      and uw.user_id = auth.uid()
+      and uw.deleted_at is null
+  );
+$$;
+
+create or replace function workspace_has_role(workspace_uuid uuid, allowed_roles text[])
+returns boolean
+set search_path = public
+security definer
+language sql
+as $$
+  select exists (
+    select 1
+    from public.user_workspaces uw
+    where uw.workspace_id = workspace_uuid
+      and uw.user_id = auth.uid()
+      and uw.role = any(allowed_roles)
+      and uw.deleted_at is null
+  );
+$$;
+
+create or replace function team_is_member(team_uuid uuid)
+returns boolean
+set search_path = public
+security definer
+language sql
+as $$
+  select exists (
+    select 1
+    from public.user_teams ut
+    where ut.team_id = team_uuid
+      and ut.user_id = auth.uid()
+      and ut.deleted_at is null
+  );
+$$;
+
+create or replace function team_has_role(team_uuid uuid, allowed_roles text[])
+returns boolean
+set search_path = public
+security definer
+language sql
+as $$
+  select exists (
+    select 1
+    from public.user_teams ut
+    where ut.team_id = team_uuid
+      and ut.user_id = auth.uid()
+      and ut.role = any(allowed_roles)
+      and ut.deleted_at is null
+  );
+$$;
+
 -- RLS Policies for workspaces
 create policy "Users can view workspaces they belong to" on workspaces
-  for select using (
-    exists (
-      select 1 from user_workspaces 
-      where workspace_id = workspaces.id 
-      and user_id = auth.uid() 
-      and deleted_at is null
-    )
-  );
+  for select using (workspace_is_member(id));
 
 create policy "Workspace admins can update workspaces" on workspaces
-  for update using (
-    exists (
-      select 1 from user_workspaces 
-      where workspace_id = workspaces.id 
-      and user_id = auth.uid() 
-      and role = 'admin'
-      and deleted_at is null
-    )
-  );
+  for update using (workspace_has_role(id, array['admin']));
 
 create policy "Workspace admins can delete workspaces (soft delete)" on workspaces
-  for update using (
-    exists (
-      select 1 from user_workspaces 
-      where workspace_id = workspaces.id 
-      and user_id = auth.uid() 
-      and role = 'admin'
-      and deleted_at is null
-    )
-  );
+  for update using (workspace_has_role(id, array['admin']));
 
 -- RLS Policies for teams
 create policy "Users can view teams in workspaces they belong to" on teams
   for select using (
-    exists (
-      select 1 from user_workspaces 
-      where workspace_id = teams.workspace_id 
-      and user_id = auth.uid() 
-      and deleted_at is null
-    )
+    workspace_is_member(workspace_id)
     and teams.deleted_at is null
     and (
       not teams.is_private or
-      exists (
-        select 1 from user_teams 
-        where team_id = teams.id 
-        and user_id = auth.uid() 
-        and deleted_at is null
-      )
+      team_is_member(teams.id)
     )
   );
 
 create policy "Team admins can update teams" on teams
   for update using (
-    exists (
-      select 1 from user_teams 
-      where team_id = teams.id 
-      and user_id = auth.uid() 
-      and role = 'admin'
-      and deleted_at is null
-    )
+    team_has_role(teams.id, array['admin'])
     and teams.deleted_at is null
   );
 
 create policy "Team admins can delete teams (soft delete)" on teams
   for update using (
-    exists (
-      select 1 from user_teams 
-      where team_id = teams.id 
-      and user_id = auth.uid() 
-      and role = 'admin'
-      and deleted_at is null
-    )
+    team_has_role(teams.id, array['admin'])
     and teams.deleted_at is null
   );
 
 -- RLS Policies for user_workspaces
 create policy "Users can view workspace memberships they belong to" on user_workspaces
   for select using (
-    user_id = auth.uid() or
-    exists (
-      select 1 from user_workspaces uw
-      where uw.workspace_id = user_workspaces.workspace_id 
-      and uw.user_id = auth.uid() 
-      and uw.role in ('admin', 'editor')
-      and uw.deleted_at is null
-    )
+    user_id = auth.uid()
+    or workspace_has_role(user_workspaces.workspace_id, array['admin','editor'])
   );
 
 create policy "Workspace admins can manage workspace memberships" on user_workspaces
   for all using (
-    exists (
-      select 1 from user_workspaces uw
-      where uw.workspace_id = user_workspaces.workspace_id 
-      and uw.user_id = auth.uid() 
-      and uw.role = 'admin'
-      and uw.deleted_at is null
-    )
+    workspace_has_role(user_workspaces.workspace_id, array['admin'])
   );
 
 -- RLS Policies for user_teams
 create policy "Users can view team memberships they belong to" on user_teams
   for select using (
-    user_id = auth.uid() or
-    exists (
-      select 1 from user_teams ut
-      where ut.team_id = user_teams.team_id 
-      and ut.user_id = auth.uid() 
-      and ut.role in ('admin', 'editor')
-      and ut.deleted_at is null
-    )
+    user_id = auth.uid()
+    or team_has_role(user_teams.team_id, array['admin','editor'])
   );
 
 create policy "Team admins can manage team memberships" on user_teams
   for all using (
-    exists (
-      select 1 from user_teams ut
-      where ut.team_id = user_teams.team_id 
-      and ut.user_id = auth.uid() 
-      and ut.role = 'admin'
-      and ut.deleted_at is null
-    )
+    team_has_role(user_teams.team_id, array['admin'])
   );
 
 -- RLS Policies for role_audit_log (only admins can view)
 create policy "Workspace admins can view audit logs" on role_audit_log
   for select using (
-    exists (
-      select 1 from user_workspaces uw
-      where uw.workspace_id::text = split_part(role_audit_log.record_id, ':', 2)
-      and uw.user_id = auth.uid() 
-      and uw.role = 'admin'
-      and uw.deleted_at is null
-    )
+    workspace_has_role((split_part(role_audit_log.record_id, ':', 2))::uuid, array['admin'])
   );
 
 -- Helper functions for soft deletes
