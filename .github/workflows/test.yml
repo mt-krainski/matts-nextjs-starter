@@ -25,6 +25,9 @@ jobs:
           path: node_modules
           key: ${{ inputs.cache-key }}
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:

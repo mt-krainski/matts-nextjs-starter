@@ -1,10 +1,5 @@
--- Extend the existing handle_new_user function to create personal workspace and team
-
--- Drop the existing trigger and function
-drop trigger if exists on_auth_user_created on auth.users;
-drop function if exists public.handle_new_user();
-
--- Create the enhanced function that creates profile, workspace, and team
+-- Trigger function that creates profile, personal workspace, and team when a new user signs up
+-- This runs automatically when a user is created in Supabase Auth
 create function public.handle_new_user()
 returns trigger
 set search_path = ''
@@ -13,7 +8,7 @@ declare
   personal_workspace_id uuid;
   personal_team_id uuid;
 begin
-  -- Create profile (existing functionality)
+  -- Create profile
   insert into public.profiles (id, full_name, avatar_url)
   values (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
   
@@ -46,7 +41,7 @@ begin
 end;
 $$ language plpgsql security definer;
 
--- Recreate the trigger
+-- Trigger that fires after a new user is created in auth.users
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();

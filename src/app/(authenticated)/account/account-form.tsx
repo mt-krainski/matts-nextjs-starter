@@ -1,6 +1,6 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { type User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,83 +12,62 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getProfileAction, updateProfileAction } from "./actions";
 
 export default function AccountForm({ user }: { user: User | null }) {
-  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [website, setWebsite] = useState<string | null>(null);
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<{
     text: string;
     type: "success" | "error";
   } | null>(null);
-  console.log("account form rerender");
 
   const getProfile = useCallback(async () => {
     if (!user) {
       setMessage({ text: "User is not defined.", type: "error" });
       return;
     }
-    try {
-      setLoading(true);
-      const { data, error, status } = await supabase
-        .from("profiles")
-        .select(`full_name, username, website, avatar_url`)
-        .eq("id", user?.id)
-        .single();
-      if (error && status !== 406) {
-        console.log(error);
-        throw error;
-      }
-      if (data) {
-        setFullname(data.full_name);
-        setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage({ text: "Error loading user data!", type: "error" });
-    } finally {
-      setLoading(false);
+
+    setLoading(true);
+    const result = await getProfileAction();
+
+    if (result.error) {
+      setMessage({ text: result.error, type: "error" });
+    } else if (result.data) {
+      setFullname(result.data.fullName);
+      setUsername(result.data.username);
+      setWebsite(result.data.website);
+      setAvatarUrl(result.data.avatarUrl);
     }
-  }, [user, supabase]);
+
+    setLoading(false);
+  }, [user]);
 
   useEffect(() => {
     getProfile();
-  }, [user, getProfile]);
+  }, [getProfile]);
 
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }: {
-    username: string | null;
-    fullname: string | null;
-    website: string | null;
-    avatar_url: string | null;
-  }) {
-    try {
-      setLoading(true);
-      setMessage(null);
-      const { error } = await supabase.from("profiles").upsert({
-        id: user?.id as string,
-        full_name: fullname,
+  function handleUpdateProfile() {
+    setMessage(null);
+
+    startTransition(async () => {
+      const result = await updateProfileAction({
+        fullName: fullname,
         username,
         website,
-        avatar_url,
-        updated_at: new Date().toISOString(),
+        avatarUrl,
       });
-      if (error) throw error;
-      setMessage({ text: "Profile updated successfully!", type: "success" });
-    } catch (error) {
-      console.error(error);
-      setMessage({ text: "Error updating the data!", type: "error" });
-    } finally {
-      setLoading(false);
-    }
+
+      if (result.error) {
+        setMessage({ text: result.error, type: "error" });
+      } else {
+        setMessage({ text: "Profile updated successfully!", type: "success" });
+      }
+    });
   }
 
   return (
@@ -152,13 +131,11 @@ export default function AccountForm({ user }: { user: User | null }) {
 
         <div className="pt-4">
           <Button
-            onClick={() =>
-              updateProfile({ fullname, username, website, avatar_url })
-            }
-            disabled={loading}
+            onClick={handleUpdateProfile}
+            disabled={loading || isPending}
             className="w-full"
           >
-            {loading ? "Loading..." : "Update Profile"}
+            {loading || isPending ? "Loading..." : "Update Profile"}
           </Button>
         </div>
 

@@ -4,6 +4,7 @@ import { AuthProvider } from "@/components/auth-provider";
 import { AuthGuard } from "@/components/auth-guard";
 import DashboardShell from "./dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
+import { getProfileSummary, getUserWorkspaces } from "@/lib/services";
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
@@ -22,22 +23,12 @@ export default async function AuthenticatedLayout({
     redirect("/auth");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, avatar_url")
-    .eq("id", user.id)
-    .single();
+  const profile = await getProfileSummary(user.id);
+  const userWorkspaces = await getUserWorkspaces(user.id);
 
-  const { data: workspaces } = await supabase
-    .from("user_workspaces")
-    .select("workspace_id, workspaces(name)")
-    .is("deleted_at", null);
-
-  console.log("workspaces", workspaces);
-
-  const workspaceList = (workspaces ?? []).map((membership) => ({
-    id: membership.workspace_id,
-    name: membership.workspaces?.name ?? "Untitled workspace",
+  const workspaceList = userWorkspaces.map((membership) => ({
+    id: membership.workspace.id,
+    name: membership.workspace.name,
   }));
 
   return (
@@ -46,9 +37,9 @@ export default async function AuthenticatedLayout({
         <DashboardShell
           user={{
             id: user.id,
-            name: profile?.full_name ?? user.email ?? "",
+            name: profile?.fullName ?? user.email ?? "",
             email: user.email ?? "",
-            avatar: profile?.avatar_url ?? undefined,
+            avatar: profile?.avatarUrl ?? undefined,
           }}
           workspaces={workspaceList}
           selectedWorkspaceId={workspaceList[0]?.id}

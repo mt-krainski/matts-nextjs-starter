@@ -25,11 +25,15 @@ jobs:
           path: node_modules
           key: ${{ inputs.cache-key }}
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       - uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - run: |
+      - name: Start Supabase
+        run: |
           supabase start --debug
           sleep 10
           npx supabase status --output env > .env.local
@@ -37,9 +41,8 @@ jobs:
           source .env.local
           echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
-          echo "SUPABASE_URL=$API_URL" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
           echo "SUPABASE_INBUCKET_URL=$INBUCKET_URL" >> $GITHUB_ENV
+          echo "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres" >> $GITHUB_ENV
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -55,11 +58,10 @@ jobs:
 
       - name: Run e2e tests
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL}}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY}}
-          SUPABASE_URL: ${{ env.SUPABASE_URL}}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ env.SUPABASE_SERVICE_ROLE_KEY}}
-          SUPABASE_INBUCKET_URL: ${{ env.SUPABASE_INBUCKET_URL}}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_INBUCKET_URL: ${{ env.SUPABASE_INBUCKET_URL }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
           NEXT_PUBLIC_COMPANY_NAME: Test Company
         run: |
           npm run test:e2e
