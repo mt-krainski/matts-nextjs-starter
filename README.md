@@ -39,7 +39,15 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 Phase 1:
 
-- Teams and workspaces for secure, scalable multi-user setups
+- teams and workspaces
+- concept of documents - user or team owns documents
+- left sidebar displays private documents
+- left sidebar displays a list of teams and documents within teams
+- left sidebar has buttons to add and edit teams (admin-only)
+- left sidebar has buttons to add documents
+- search can search through documents
+- admin settings - workspace settings (general (name), teams, members, delete); nice composable UI 
+
 
 At this point, the starter is ready to be used to build MVP-grade SaaS applications.
 

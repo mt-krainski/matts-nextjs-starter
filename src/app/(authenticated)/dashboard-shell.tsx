@@ -7,6 +7,12 @@ import type { Workspace } from "@/components/Navbar/component";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { Loader2, ListTodo, Users } from "lucide-react";
 
+interface Team {
+  id: string;
+  name: string;
+  isPrivate: boolean;
+}
+
 interface DashboardShellProps {
   user: {
     id: string;
@@ -16,6 +22,7 @@ interface DashboardShellProps {
   };
   workspaces: Workspace[];
   selectedWorkspaceId?: string;
+  teams: Team[];
   children: ReactNode;
 }
 
@@ -23,6 +30,7 @@ export default function DashboardShell({
   user,
   workspaces,
   selectedWorkspaceId,
+  teams,
   children,
 }: DashboardShellProps) {
   const router = useRouter();
@@ -40,20 +48,21 @@ export default function DashboardShell({
 
   const handleAccountClick = () => router.push("/account");
 
-  const privateSidebarItems = workspaces.map((workspace) => ({
-    id: workspace.id,
-    label: workspace.name,
+  const privateTeams = teams.filter((t) => t.isPrivate);
+  const sharedTeams = teams.filter((t) => !t.isPrivate);
+
+  const privateSidebarItems = privateTeams.map((team) => ({
+    id: team.id,
+    label: team.name,
     icon: ListTodo,
-    onClick: () => router.push(`/workspaces/${workspace.id}`),
-    isActive: selectedWorkspaceId === workspace.id,
+    onClick: () => router.push(`/teams/${team.id}`),
   }));
 
-  const teamSidebarItems = workspaces.map((workspace) => ({
-    id: workspace.id,
-    label: workspace.name,
+  const teamSidebarItems = sharedTeams.map((team) => ({
+    id: team.id,
+    label: team.name,
     icon: Users,
-    onClick: () => router.push(`/workspaces/${workspace.id}`),
-    isActive: selectedWorkspaceId === workspace.id,
+    onClick: () => router.push(`/teams/${team.id}`),
   }));
 
   return (

@@ -4,7 +4,11 @@ import { AuthProvider } from "@/components/auth-provider";
 import { AuthGuard } from "@/components/auth-guard";
 import DashboardShell from "./dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
-import { getProfileSummary, getUserWorkspaces } from "@/lib/services";
+import {
+  getProfileSummary,
+  getUserWorkspaces,
+  getWorkspaceTeams,
+} from "@/lib/services";
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
@@ -31,6 +35,17 @@ export default async function AuthenticatedLayout({
     name: membership.workspace.name,
   }));
 
+  const selectedWorkspaceId = workspaceList[0]?.id;
+  const teams = selectedWorkspaceId
+    ? await getWorkspaceTeams(user.id, selectedWorkspaceId)
+    : [];
+
+  const teamList = teams.map((team) => ({
+    id: team.id,
+    name: team.name,
+    isPrivate: team.isPrivate,
+  }));
+
   return (
     <AuthProvider>
       <AuthGuard>
@@ -42,7 +57,8 @@ export default async function AuthenticatedLayout({
             avatar: profile?.avatarUrl ?? undefined,
           }}
           workspaces={workspaceList}
-          selectedWorkspaceId={workspaceList[0]?.id}
+          selectedWorkspaceId={selectedWorkspaceId}
+          teams={teamList}
         >
           {children}
         </DashboardShell>
