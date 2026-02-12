@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { AuthProvider } from "@/components/auth-provider";
-import { AuthGuard } from "@/components/auth-guard";
+import { UserProfileProvider } from "@/components/user-profile-provider";
+import { WorkspaceProvider } from "@/components/workspace-provider";
 import DashboardShell from "./dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -48,21 +49,22 @@ export default async function AuthenticatedLayout({
 
   return (
     <AuthProvider>
-      <AuthGuard>
-        <DashboardShell
-          user={{
-            id: user.id,
-            name: profile?.fullName ?? user.email ?? "",
-            email: user.email ?? "",
-            avatar: profile?.avatarUrl ?? undefined,
-          }}
+      <UserProfileProvider
+        profile={{
+          id: user.id,
+          name: profile?.fullName ?? user.email ?? "",
+          email: user.email ?? "",
+          avatar: profile?.avatarUrl ?? undefined,
+        }}
+      >
+        <WorkspaceProvider
           workspaces={workspaceList}
           selectedWorkspaceId={selectedWorkspaceId}
           teams={teamList}
         >
-          {children}
-        </DashboardShell>
-      </AuthGuard>
+          <DashboardShell>{children}</DashboardShell>
+        </WorkspaceProvider>
+      </UserProfileProvider>
     </AuthProvider>
   );
 }

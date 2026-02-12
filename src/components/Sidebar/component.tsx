@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Search, Home } from "lucide-react";
+import { Search, Home, ListTodo, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,15 +21,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-
-export interface SidebarItem {
-  id: string;
-  label: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  href?: string;
-  onClick?: () => void;
-  isActive?: boolean;
-}
+import { useWorkspace } from "@/components/workspace-provider";
 
 export interface SearchResult {
   id: string;
@@ -40,26 +32,24 @@ export interface SearchResult {
 }
 
 export interface AppSidebarProps {
-  privateItems?: SidebarItem[];
-  teamItems?: SidebarItem[];
   onSearch?: (query: string) => void;
-  onHomeClick?: () => void;
   searchResults?: SearchResult[];
   className?: string;
   children?: ReactNode;
 }
 
 export function AppSidebar({
-  privateItems = [],
-  teamItems = [],
   onSearch,
-  onHomeClick,
   searchResults = [],
   className,
   children,
 }: AppSidebarProps) {
+  const { teams, navigateToTeam, navigateHome } = useWorkspace();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  const privateTeams = teams.filter((t) => t.isPrivate);
+  const sharedTeams = teams.filter((t) => !t.isPrivate);
 
   const handleModalSearch = (query: string) => {
     setSearchQuery(query);
@@ -83,7 +73,7 @@ export function AppSidebar({
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton onClick={onHomeClick}>
+                    <SidebarMenuButton onClick={navigateHome}>
                       <Home className="h-4 w-4" />
                       <span>Home</span>
                     </SidebarMenuButton>
@@ -93,29 +83,18 @@ export function AppSidebar({
             </SidebarGroup>
 
             {/* Private Section */}
-            {privateItems.length > 0 && (
+            {privateTeams.length > 0 && (
               <SidebarGroup>
                 <SidebarGroupLabel>Private</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {privateItems.map((item) => (
-                      <SidebarMenuItem key={item.id}>
+                    {privateTeams.map((team) => (
+                      <SidebarMenuItem key={team.id}>
                         <SidebarMenuButton
-                          asChild={!!item.href}
-                          onClick={item.onClick}
-                          isActive={item.isActive}
+                          onClick={() => navigateToTeam(team.id)}
                         >
-                          {item.href ? (
-                            <a href={item.href}>
-                              {item.icon && <item.icon className="h-4 w-4" />}
-                              <span>{item.label}</span>
-                            </a>
-                          ) : (
-                            <>
-                              {item.icon && <item.icon className="h-4 w-4" />}
-                              <span>{item.label}</span>
-                            </>
-                          )}
+                          <ListTodo className="h-4 w-4" />
+                          <span>{team.name}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -125,29 +104,18 @@ export function AppSidebar({
             )}
 
             {/* Team Section */}
-            {teamItems.length > 0 && (
+            {sharedTeams.length > 0 && (
               <SidebarGroup>
                 <SidebarGroupLabel>Team</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {teamItems.map((item) => (
-                      <SidebarMenuItem key={item.id}>
+                    {sharedTeams.map((team) => (
+                      <SidebarMenuItem key={team.id}>
                         <SidebarMenuButton
-                          asChild={!!item.href}
-                          onClick={item.onClick}
-                          isActive={item.isActive}
+                          onClick={() => navigateToTeam(team.id)}
                         >
-                          {item.href ? (
-                            <a href={item.href}>
-                              {item.icon && <item.icon className="h-4 w-4" />}
-                              <span>{item.label}</span>
-                            </a>
-                          ) : (
-                            <>
-                              {item.icon && <item.icon className="h-4 w-4" />}
-                              <span>{item.label}</span>
-                            </>
-                          )}
+                          <Users className="h-4 w-4" />
+                          <span>{team.name}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -164,7 +132,6 @@ export function AppSidebar({
                 <DialogTitle className="sr-only">Search</DialogTitle>
               </DialogHeader>
 
-              {/* Search Input */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -177,7 +144,6 @@ export function AppSidebar({
                 />
               </div>
 
-              {/* Search Results */}
               <div className="space-y-2 max-h-[60vh] overflow-y-auto">
                 {searchResults.length > 0 ? (
                   <div className="space-y-1">

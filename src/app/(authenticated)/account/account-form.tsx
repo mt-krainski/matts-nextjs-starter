@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { type User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useUserProfile } from "@/components/user-profile-provider";
 import { getProfileAction, updateProfileAction } from "./actions";
 
-export default function AccountForm({ user }: { user: User | null }) {
+export default function AccountForm() {
+  const { profile } = useUserProfile();
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
@@ -27,11 +28,6 @@ export default function AccountForm({ user }: { user: User | null }) {
   } | null>(null);
 
   const getProfile = useCallback(async () => {
-    if (!user) {
-      setMessage({ text: "User is not defined.", type: "error" });
-      return;
-    }
-
     setLoading(true);
     const result = await getProfileAction();
 
@@ -45,7 +41,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     }
 
     setLoading(false);
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     getProfile();
@@ -93,7 +89,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={user?.email || ""} disabled />
+          <Input id="email" type="email" value={profile.email} disabled />
         </div>
 
         <div className="space-y-2">
@@ -104,6 +100,7 @@ export default function AccountForm({ user }: { user: User | null }) {
             value={fullname || ""}
             onChange={(e) => setFullname(e.target.value)}
             placeholder="Enter your full name"
+            disabled={loading}
           />
         </div>
 
@@ -115,6 +112,7 @@ export default function AccountForm({ user }: { user: User | null }) {
             value={username || ""}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter your username"
+            disabled={loading}
           />
         </div>
 
@@ -126,6 +124,7 @@ export default function AccountForm({ user }: { user: User | null }) {
             value={website || ""}
             onChange={(e) => setWebsite(e.target.value)}
             placeholder="https://example.com"
+            disabled={loading}
           />
         </div>
 

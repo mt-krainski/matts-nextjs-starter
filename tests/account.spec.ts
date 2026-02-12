@@ -6,7 +6,7 @@ test("has title", async ({ page }) => {
   await expect(page).toHaveTitle(process.env.NEXT_PUBLIC_COMPANY_NAME!);
 });
 
-test.describe.configure({ retries: 3 });
+test.describe.configure({ retries: 0 });
 test("create account, logout, login", async ({ page }) => {
   const runId = crypto.randomUUID();
   const testUserEmail = `test+${runId}@test.com`;
@@ -16,10 +16,12 @@ test("create account, logout, login", async ({ page }) => {
 
   await login(page, testUserEmail);
 
-  // TODO: there's some issue with how the account-form is being rerendered - it's causing
-  // the full name form to clear after the value is filled.
-  // Here, we wait for the rendering cycle to stop.
-  await page.waitForTimeout(1000);
+  // The Update Profile button is inactive until
+  await page.waitForTimeout(500);
+
+  await expect(
+    page.getByRole("button", { name: "Update Profile" }),
+  ).toBeEnabled({ timeout: 10000 });
 
   await page.getByRole("textbox", { name: "Full Name" }).fill(testUserName);
   await page.getByRole("button", { name: "Update Profile" }).click();
@@ -32,6 +34,6 @@ test("create account, logout, login", async ({ page }) => {
   await login(page, testUserEmail);
 
   await expect(page.getByRole("textbox", { name: "Full Name" })).toHaveValue(
-    testUserName
+    testUserName,
   );
 });

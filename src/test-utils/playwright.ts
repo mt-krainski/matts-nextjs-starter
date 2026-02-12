@@ -41,11 +41,13 @@ export async function login(page: Page, userEmail: string) {
   await page.getByRole("button", { name: "Send verification code" }).click();
 
   await expect(page).toHaveURL(/\/auth\/verify-otp(\?.*)?$/);
-  await expect(page.getByText("Enter verification code")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Enter verification code" }),
+  ).toBeVisible();
 
   // Fetch emails from Mailpit
   const mailpitResponse = await fetch(
-    `${process.env.SUPABASE_INBUCKET_URL}/api/v1/messages`
+    `${process.env.SUPABASE_INBUCKET_URL}/api/v1/messages`,
   );
   const mailpitData: MailpitResponse = await mailpitResponse.json();
 
@@ -53,8 +55,8 @@ export async function login(page: Page, userEmail: string) {
   const userEmailMessage = mailpitData.messages.find(
     (message: MailpitMessage) =>
       message.To.some(
-        (recipient: MailpitRecipient) => recipient.Address === userEmail
-      )
+        (recipient: MailpitRecipient) => recipient.Address === userEmail,
+      ),
   );
 
   if (!userEmailMessage) {
